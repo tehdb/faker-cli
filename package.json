@@ -1,0 +1,66 @@
+{
+  "name": "@tehdb/faker-cli",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "bin": {
+    "faker": "./dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tehdb/faker-cli.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "npm run build && node ./dist/index.js",
+    "build": "vite build",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "test": "vitest run",
+    "test:ci": "npm run build && npm run test",
+    "test:dev": "vitest",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "private": false,
+  "keywords": [
+    "faker",
+    "faker.js",
+    "fakerjs",
+    "faker-js",
+    "faker cli",
+    "cli faker",
+    "faker-cli",
+    "faker command line"
+  ],
+  "author": "tehdb",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "@faker-js/faker": "^9.3.0",
+    "commander": "^12.1.0",
+    "ramda": "^0.30.1",
+    "ramda-adjunct": "^5.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@types/eslint-config-prettier": "^6.11.3",
+    "@types/node": "^22.10.2",
+    "@types/ramda": "^0.30.2",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "execa": "^9.5.2",
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.1",
+    "vite": "^5.4.11",
+    "vite-plugin-node": "^4.0.0",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
