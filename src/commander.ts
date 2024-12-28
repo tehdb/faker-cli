@@ -1,5 +1,7 @@
 import * as r from 'ramda';
 import * as ra from 'ramda-adjunct';
+import path from 'path';
+import fs from 'fs';
 import { Command, Option } from 'commander';
 import { InputParams } from 'faker-cli';
 import { parseParameters } from './params';
@@ -8,7 +10,6 @@ import { supportedLocales } from './faker';
 const packageName = PACKAGE_NAME;
 const packageVersion = PACKAGE_VERSION;
 const fakerPackageName = '@faker-js/faker';
-const fakerVersion = FAKER_JS_VERSION;
 
 const program = new Command();
 
@@ -72,6 +73,10 @@ program.parse(process.argv);
 const cliOptions = program.opts();
 export const inputParams$ = new Promise<InputParams | string>((resolve) => {
   if (cliOptions.info) {
+    const fakerPackageJsonPath = path.resolve(__dirname, `../node_modules/${fakerPackageName}/package.json`);
+    const fakerPackageJson = JSON.parse(fs.readFileSync(fakerPackageJsonPath, 'utf8'));
+    const fakerVersion = fakerPackageJson.version;
+
     return resolve(
       `${packageName} v${packageVersion} | ${fakerPackageName} v${fakerVersion}`,
     );
