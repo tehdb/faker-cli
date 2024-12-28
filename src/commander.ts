@@ -1,29 +1,19 @@
 import * as r from 'ramda';
 import * as ra from 'ramda-adjunct';
 import { Command, Option } from 'commander';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import { InputParams } from 'faker-cli';
 import { parseParameters } from './params';
 import { supportedLocales } from './faker';
 
-const packageJsonPath = join(__dirname, '../package.json');
-const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
-const packageName = packageJson.name;
-const version = packageJson.version;
-
-const fakerPackageJsonPath = join(
-  __dirname,
-  '../node_modules/@faker-js/faker/package.json',
-);
-const fakerPackageJson = JSON.parse(readFileSync(fakerPackageJsonPath, 'utf8'));
-const fakerPackageName = fakerPackageJson.name;
-const fakerVersion = fakerPackageJson.version;
+const packageName = PACKAGE_NAME;
+const packageVersion = PACKAGE_VERSION;
+const fakerPackageName = '@faker-js/faker';
+const fakerVersion = FAKER_JS_VERSION;
 
 const program = new Command();
 
 program
-  .version(version)
+  .version(packageVersion)
   .description('cli wrapper for @faker-js/faker (https://fakerjs.dev)')
   .name('faker')
   .usage(
@@ -83,7 +73,7 @@ const cliOptions = program.opts();
 export const inputParams$ = new Promise<InputParams | string>((resolve) => {
   if (cliOptions.info) {
     return resolve(
-      `${packageName} v${version} | ${fakerPackageName} v${fakerVersion}`,
+      `${packageName} v${packageVersion} | ${fakerPackageName} v${fakerVersion}`,
     );
   }
 

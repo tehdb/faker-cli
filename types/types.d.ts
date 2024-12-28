@@ -1,3 +1,7 @@
+declare const PACKAGE_NAME: string;
+declare const PACKAGE_VERSION: string;
+declare const FAKER_JS_VERSION: string;
+
 declare module 'faker-cli' {
   export type FnParameter = null | boolean | number | bigint | string | object;
 
@@ -8,3 +12,7 @@ declare module 'faker-cli' {
     locale?: string;
   };
 }
+
+
+
+
