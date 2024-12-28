@@ -57,7 +57,7 @@ Alternative syntax:
 faker --module-name="lorem" --function-name="words"
 faker --module-name="lorem" --function-name="words" --parameter=5
 faker --module-name="lorem" --function-name="words" --parameter="min:4" --parameter="max:7"
-faker --module-name="lorem" --function-name="words" --language="de"
+faker --module-name="lorem" --function-name="words" --locale="de"
 ```
 
 Shortened syntax:

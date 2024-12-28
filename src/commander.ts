@@ -9,7 +9,16 @@ import { supportedLocales } from './faker';
 
 const packageJsonPath = join(__dirname, '../package.json');
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+const packageName = packageJson.name;
 const version = packageJson.version;
+
+const fakerPackageJsonPath = join(
+  __dirname,
+  '../node_modules/@faker-js/faker/package.json',
+);
+const fakerPackageJson = JSON.parse(readFileSync(fakerPackageJsonPath, 'utf8'));
+const fakerPackageName = fakerPackageJson.name;
+const fakerVersion = fakerPackageJson.version;
 
 const program = new Command();
 
@@ -18,7 +27,7 @@ program
   .description('cli wrapper for @faker-js/faker (https://fakerjs.dev)')
   .name('faker')
   .usage(
-    '-m <module-name> -f <function-name> [-p <param-value] [-p <param-key>:<param-value>]... [-l <locale>]',
+    '-m <module-name> -f <function-name> [-p <param-value]... [-p <param-key>:<param-value>]... [-l <locale>]',
   )
   .addHelpText(
     'after',
@@ -28,18 +37,24 @@ Examples:
   $ faker -m lorem -f words
   $ faker -m lorem -f words -l de
   $ faker -m lorem -f words -p 5
+  $ faker -m lorem -f words -p 5 -l de
   $ faker -m lorem -f words -p min:4 -p max:7
+  $ faker -m lorem -f words -p min:4 -p max:7 -l de
+  $ faker -m lorem -f sentences -p 2 -p '<br>'
+  $ faker -m lorem -f sentences -p 2 -p '<br>' -l de
   $ faker --module-name=lorem --function-name=words
   $ faker --module-name=lorem --function-name=words --parameter=5
   $ faker --module-name=lorem --function-name=words --parameter='min:4' --parameter='max:7'
-  $ faker --module-name=lorem --function-name=words --language='de'
+  $ faker --module-name=lorem --function-name=words --locale='de'
+  $ faker --module-name=lorem --function-name=sentences --parameter='2' --parameter='<br>' --locale='de'
   $ faker lorem.words
-  $ faker lorem words
   $ faker lorem words de
   $ faker lorem words 5
   $ faker lorem words 5 de
   $ faker lorem words min:4 max:5
   $ faker lorem words min:4 max:5 de
+  $ faker lorem sentences 2 '<br>'
+  $ faker lorem sentences 2 '<br>' de
   `,
   );
 
@@ -59,12 +74,19 @@ program
       'function parameters as simple value and/or key-value pairs, separated by semicolons',
     ).default([]),
   )
-  .addOption(new Option('-l, --locale <value>', 'the locale').default('en'));
+  .addOption(new Option('-l, --locale <value>', 'the locale').default('en'))
+  .addOption(new Option('-i, --info', 'display information'));
 
 program.parse(process.argv);
 
 const cliOptions = program.opts();
-export const inputParams$ = new Promise<InputParams>((resolve) => {
+export const inputParams$ = new Promise<InputParams | string>((resolve) => {
+  if (cliOptions.info) {
+    return resolve(
+      `${packageName} v${version} | ${fakerPackageName} v${fakerVersion}`,
+    );
+  }
+
   if (
     ra.isNonEmptyString(cliOptions.moduleName) &&
     ra.isNonEmptyString(cliOptions.functionName)
@@ -102,10 +124,11 @@ export const inputParams$ = new Promise<InputParams>((resolve) => {
         }
 
         const [splitedModuleName, splitedFuncionName] = moduleName.split('.');
+
         resolve({
           moduleName: splitedModuleName,
           functionName: splitedFuncionName,
-          functionArgs: parseParameters(functionArgs),
+          functionArgs: parseParameters([functionName, ...functionArgs]),
           locale,
         });
       },

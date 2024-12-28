@@ -3,7 +3,11 @@ import { inputParams$ } from './commander';
 import { callFakerFunction } from './faker';
 
 inputParams$
-  .then((params: InputParams) => {
+  .then((params: InputParams | string) => {
+    if (typeof params === 'string') {
+      return params;
+    }
+
     return callFakerFunction(
       params.moduleName,
       params.functionName,
