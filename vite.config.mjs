@@ -11,8 +11,8 @@ const packageVersion = packageJson.version;
 
 export default defineConfig({
   define: {
-    'PACKAGE_NAME': JSON.stringify(packageName),
-    'PACKAGE_VERSION': JSON.stringify(packageVersion),
+    PACKAGE_NAME: JSON.stringify(packageName),
+    PACKAGE_VERSION: JSON.stringify(packageVersion),
   },
   plugins: [
     VitePluginNode({

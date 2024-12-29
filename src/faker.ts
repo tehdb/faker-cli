@@ -41,3 +41,35 @@ export const callFakerFunction = (
     );
   }
 };
+
+export const availebleModules = ((): Map<string, string[]> => {
+  const modelKeysExclude = ['definitions', 'rawDefinitions'];
+  const functionKeysExluce = ['faker'];
+
+  const getObjectKeys = (obj: object, exclude: string[]): string[] => {
+    return r.pipe(
+      r.keys,
+      r.map((key) => key as string),
+      r.filter(
+        (key: string) => !r.startsWith('_', key) && !r.includes(key, exclude),
+      ),
+      r.sort((a: string, b: string) => a.localeCompare(b)),
+    )(obj);
+  };
+  const faker = new Faker({ locale: allLocales.en });
+  const modulesMap = new Map<string, string[]>();
+
+  getObjectKeys(faker, modelKeysExclude).forEach((key) => {
+    const fakerModule = r.path([key], faker);
+
+    if (!fakerModule) return;
+
+    const fakerModuleFunctionKeys = getObjectKeys(
+      fakerModule,
+      functionKeysExluce,
+    );
+    modulesMap.set(key, fakerModuleFunctionKeys);
+  });
+
+  return modulesMap;
+})();

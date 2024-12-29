@@ -1,6 +1,6 @@
 {
   "name": "@tehdb/faker-cli",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "main": "dist/index.js",
   "bin": {
     "faker": "./dist/index.js"
@@ -63,5 +63,6 @@
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
-  }
+  },
+  "packageManager": "yarn@4.5.2+sha224.c2e2e9ed3cdadd6ec250589b3393f71ae56d5ec297af11cec1eba3b4"
 }

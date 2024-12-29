@@ -11,7 +11,3 @@ declare module 'faker-cli' {
     locale?: string;
   };
 }
-
-
-
-

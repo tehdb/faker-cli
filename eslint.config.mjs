@@ -12,7 +12,11 @@ export default [
   {
     files: ['**/*.{js,mjs,cjs,ts}'],
     languageOptions: {
-      globals: globals.node,
+      globals: {
+        ...globals.node,
+        PACKAGE_NAME: 'readonly',
+        PACKAGE_VERSION: 'readonly',
+      },
       parser: tsParser,
     },
     plugins: {

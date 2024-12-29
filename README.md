@@ -21,6 +21,9 @@ faker -m <module-name> -f <function-name> [-p <param-value>] [-p <param-key>:<pa
 - `-f, --function-name <value>` The name of the function in the module
 - `-p, --parameter [value...]` Function parameters as simple value and/or key-value pairs, separated by semicolons (default: [])
 - `-l, --locale <value>` The locale (default: "en")
+- `--info` display package information
+- `--available-modules` display faker modules and functions
+- `--supported-locales` display supported locales
 - `-h, --help` Display help for command
 
 > For modules and supported functions see [faker api reference](https://fakerjs.dev/api/)
@@ -71,3 +74,5 @@ faker lorem words 5 de
 faker lorem words min:4 max:5
 faker lorem words min:4 max:5 de
 ```
+
+## License MIT

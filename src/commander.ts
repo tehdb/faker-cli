@@ -5,7 +5,7 @@ import fs from 'fs';
 import { Command, Option } from 'commander';
 import { InputParams } from 'faker-cli';
 import { parseParameters } from './params';
-import { supportedLocales } from './faker';
+import * as faker from './faker';
 
 const packageName = PACKAGE_NAME;
 const packageVersion = PACKAGE_VERSION;
@@ -66,20 +66,49 @@ program
     ).default([]),
   )
   .addOption(new Option('-l, --locale <value>', 'the locale').default('en'))
-  .addOption(new Option('-i, --info', 'display information'));
+  .addOption(new Option('--info', 'display package information'))
+  .addOption(
+    new Option('--available-modules', 'display faker modules and functions'),
+  )
+  .addOption(new Option('--supported-locales', 'display supported locales'));
 
 program.parse(process.argv);
 
 const cliOptions = program.opts();
 export const inputParams$ = new Promise<InputParams | string>((resolve) => {
+  // show info
   if (cliOptions.info) {
-    const fakerPackageJsonPath = path.resolve(__dirname, `../node_modules/${fakerPackageName}/package.json`);
-    const fakerPackageJson = JSON.parse(fs.readFileSync(fakerPackageJsonPath, 'utf8'));
+    const fakerPackageJsonPath = path.resolve(
+      __dirname,
+      `../node_modules/${fakerPackageName}/package.json`,
+    );
+    const fakerPackageJson = JSON.parse(
+      fs.readFileSync(fakerPackageJsonPath, 'utf8'),
+    );
     const fakerVersion = fakerPackageJson.version;
 
     return resolve(
       `${packageName} v${packageVersion} | ${fakerPackageName} v${fakerVersion}`,
     );
+  }
+
+  // show locales
+  if (cliOptions.supportedLocales) {
+    return resolve(faker.supportedLocales.join(', '));
+  }
+
+  // show modules
+  if (cliOptions.availableModules) {
+    let output = '';
+
+    faker.availebleModules.forEach((fnKeys: string[], mKey: string) => {
+      output += `${mKey}:\n`;
+      fnKeys.forEach((fnKey) => {
+        output += ` - ${fnKey}\n`;
+      });
+    });
+
+    return resolve(output);
   }
 
   if (
@@ -103,7 +132,7 @@ export const inputParams$ = new Promise<InputParams | string>((resolve) => {
 
         if (ra.isNonEmptyArray(functionArgs)) {
           const lastArg = r.last(functionArgs);
-          if (lastArg && r.includes(lastArg, supportedLocales)) {
+          if (lastArg && r.includes(lastArg, faker.supportedLocales)) {
             locale = lastArg;
             functionArgs = r.init(functionArgs);
           }
