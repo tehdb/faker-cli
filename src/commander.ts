@@ -68,14 +68,14 @@ program
   .addOption(new Option('-l, --locale <value>', 'the locale').default('en'))
   .addOption(new Option('--info', 'display package information'))
   .addOption(
-    new Option('--available-modules', 'display faker modules and functions'),
+    new Option('--available-modules [module-name]', 'display faker modules/functions'),
   )
   .addOption(new Option('--supported-locales', 'display supported locales'));
 
 program.parse(process.argv);
 
 const cliOptions = program.opts();
-export const inputParams$ = new Promise<InputParams | string>((resolve) => {
+export const inputParams$ = new Promise<InputParams | string>((resolve, reject) => {
   // show info
   if (cliOptions.info) {
     const fakerPackageJsonPath = path.resolve(
@@ -101,12 +101,23 @@ export const inputParams$ = new Promise<InputParams | string>((resolve) => {
   if (cliOptions.availableModules) {
     let output = '';
 
-    faker.availebleModules.forEach((fnKeys: string[], mKey: string) => {
-      output += `${mKey}:\n`;
-      fnKeys.forEach((fnKey) => {
-        output += ` - ${fnKey}\n`;
+    if (ra.isNonEmptyString(cliOptions.availableModules)) {
+      const module = faker.availebleModules.get(cliOptions.availableModules)
+
+      if (!module) return reject(new Error(`module '${cliOptions.availableModules}' not found`));
+
+      output += module.join(', ');
+    }
+
+    if (cliOptions.availableModules === true) {
+      faker.availebleModules.forEach((fnKeys: string[], mKey: string) => {
+        output += `${mKey}:\n`;
+        fnKeys.forEach((fnKey) => {
+          output += ` - ${fnKey}\n`;
+        });
       });
-    });
+    }
+
 
     return resolve(output);
   }

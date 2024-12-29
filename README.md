@@ -22,7 +22,7 @@ faker -m <module-name> -f <function-name> [-p <param-value>] [-p <param-key>:<pa
 - `-p, --parameter [value...]` Function parameters as simple value and/or key-value pairs, separated by semicolons (default: [])
 - `-l, --locale <value>` The locale (default: "en")
 - `--info` display package information
-- `--available-modules` display faker modules and functions
+- `--available-modules` display faker modules/functions
 - `--supported-locales` display supported locales
 - `-h, --help` Display help for command
 
