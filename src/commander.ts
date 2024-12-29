@@ -68,107 +68,115 @@ program
   .addOption(new Option('-l, --locale <value>', 'the locale').default('en'))
   .addOption(new Option('--info', 'display package information'))
   .addOption(
-    new Option('--available-modules [module-name]', 'display faker modules/functions'),
+    new Option(
+      '--available-modules [module-name]',
+      'display faker modules/functions',
+    ),
   )
   .addOption(new Option('--supported-locales', 'display supported locales'));
 
 program.parse(process.argv);
 
 const cliOptions = program.opts();
-export const inputParams$ = new Promise<InputParams | string>((resolve, reject) => {
-  // show info
-  if (cliOptions.info) {
-    const fakerPackageJsonPath = path.resolve(
-      __dirname,
-      `../node_modules/${fakerPackageName}/package.json`,
-    );
-    const fakerPackageJson = JSON.parse(
-      fs.readFileSync(fakerPackageJsonPath, 'utf8'),
-    );
-    const fakerVersion = fakerPackageJson.version;
+export const inputParams$ = new Promise<InputParams | string>(
+  (resolve, reject) => {
+    // show info
+    if (cliOptions.info) {
+      const fakerPackageJsonPath = path.resolve(
+        __dirname,
+        `../node_modules/${fakerPackageName}/package.json`,
+      );
+      const fakerPackageJson = JSON.parse(
+        fs.readFileSync(fakerPackageJsonPath, 'utf8'),
+      );
+      const fakerVersion = fakerPackageJson.version;
 
-    return resolve(
-      `${packageName} v${packageVersion} | ${fakerPackageName} v${fakerVersion}`,
-    );
-  }
-
-  // show locales
-  if (cliOptions.supportedLocales) {
-    return resolve(faker.supportedLocales.join(', '));
-  }
-
-  // show modules
-  if (cliOptions.availableModules) {
-    let output = '';
-
-    if (ra.isNonEmptyString(cliOptions.availableModules)) {
-      const module = faker.availebleModules.get(cliOptions.availableModules)
-
-      if (!module) return reject(new Error(`module '${cliOptions.availableModules}' not found`));
-
-      output += module.join(', ');
+      return resolve(
+        `${packageName} v${packageVersion} | ${fakerPackageName} v${fakerVersion}`,
+      );
     }
 
-    if (cliOptions.availableModules === true) {
-      faker.availebleModules.forEach((fnKeys: string[], mKey: string) => {
-        output += `${mKey}:\n`;
-        fnKeys.forEach((fnKey) => {
-          output += ` - ${fnKey}\n`;
+    // show locales
+    if (cliOptions.supportedLocales) {
+      return resolve(faker.supportedLocales.join(', '));
+    }
+
+    // show modules
+    if (cliOptions.availableModules) {
+      let output = '';
+
+      if (ra.isNonEmptyString(cliOptions.availableModules)) {
+        const module = faker.availebleModules.get(cliOptions.availableModules);
+
+        if (!module) {
+          return reject(
+            new Error(`module '${cliOptions.availableModules}' not found`),
+          );
+        }
+
+        output += module.join(', ');
+      }
+
+      if (cliOptions.availableModules === true) {
+        faker.availebleModules.forEach((fnKeys: string[], mKey: string) => {
+          output += `${mKey}:\n`;
+          fnKeys.forEach((fnKey) => {
+            output += ` - ${fnKey}\n`;
+          });
         });
+      }
+
+      return resolve(output);
+    }
+
+    if (
+      ra.isNonEmptyString(cliOptions.moduleName) &&
+      ra.isNonEmptyString(cliOptions.functionName)
+    ) {
+      return resolve({
+        moduleName: cliOptions.moduleName,
+        functionName: cliOptions.functionName,
+        functionArgs: parseParameters(cliOptions.parameter),
+        locale: cliOptions.locale,
       });
     }
 
+    program
+      .allowUnknownOption()
+      .arguments('<moduleName> [functionName] [functionArgs...]')
+      .action(
+        (moduleName: string, functionName: string, functionArgs: string[]) => {
+          let locale = 'en';
 
-    return resolve(output);
-  }
-
-  if (
-    ra.isNonEmptyString(cliOptions.moduleName) &&
-    ra.isNonEmptyString(cliOptions.functionName)
-  ) {
-    return resolve({
-      moduleName: cliOptions.moduleName,
-      functionName: cliOptions.functionName,
-      functionArgs: parseParameters(cliOptions.parameter),
-      locale: cliOptions.locale,
-    });
-  }
-
-  program
-    .allowUnknownOption()
-    .arguments('<moduleName> [functionName] [functionArgs...]')
-    .action(
-      (moduleName: string, functionName: string, functionArgs: string[]) => {
-        let locale = 'en';
-
-        if (ra.isNonEmptyArray(functionArgs)) {
-          const lastArg = r.last(functionArgs);
-          if (lastArg && r.includes(lastArg, faker.supportedLocales)) {
-            locale = lastArg;
-            functionArgs = r.init(functionArgs);
+          if (ra.isNonEmptyArray(functionArgs)) {
+            const lastArg = r.last(functionArgs);
+            if (lastArg && r.includes(lastArg, faker.supportedLocales)) {
+              locale = lastArg;
+              functionArgs = r.init(functionArgs);
+            }
           }
-        }
 
-        if (!moduleName.includes('.')) {
-          return resolve({
-            moduleName,
-            functionName,
-            functionArgs: parseParameters(functionArgs),
+          if (!moduleName.includes('.')) {
+            return resolve({
+              moduleName,
+              functionName,
+              functionArgs: parseParameters(functionArgs),
+              locale,
+            });
+          }
+
+          const [splitedModuleName, splitedFuncionName] = moduleName.split('.');
+
+          resolve({
+            moduleName: splitedModuleName,
+            functionName: splitedFuncionName,
+            functionArgs: parseParameters([functionName, ...functionArgs]),
             locale,
           });
-        }
-
-        const [splitedModuleName, splitedFuncionName] = moduleName.split('.');
-
-        resolve({
-          moduleName: splitedModuleName,
-          functionName: splitedFuncionName,
-          functionArgs: parseParameters([functionName, ...functionArgs]),
-          locale,
-        });
-      },
-    )
-    .parse(process.argv);
-});
+        },
+      )
+      .parse(process.argv);
+  },
+);
 
 export default program;

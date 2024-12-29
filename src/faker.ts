@@ -1,6 +1,6 @@
 import * as r from 'ramda';
 import * as ra from 'ramda-adjunct';
-import { allLocales, Faker, LocaleDefinition } from '@faker-js/faker';
+import { Faker, LocaleDefinition, allLocales, faker } from '@faker-js/faker';
 
 export const supportedLocales: string[] = (function () {
   const keys = r.keys(allLocales);
@@ -9,8 +9,7 @@ export const supportedLocales: string[] = (function () {
 })();
 
 const getLozalizedFaker = (locale?: string) => {
-  if (!locale || ra.isNilOrEmpty(locale))
-    return new Faker({ locale: allLocales.en });
+  if (!locale || ra.isNilOrEmpty(locale) || locale === 'en') return faker;
 
   if (!r.includes(locale, supportedLocales)) {
     throw new Error(`locale '${locale}' not supported`);
