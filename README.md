@@ -75,4 +75,12 @@ faker lorem words min:4 max:5
 faker lorem words min:4 max:5 de
 ```
 
+## Zsh completions
+
+```sh
+# .zshrc
+fpath=(/path/to/faker-cli/completions $fpath)
+autoload -U compinit && compinit
+```
+
 ## License MIT

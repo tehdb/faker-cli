@@ -1,15 +1,16 @@
 #compdef faker
 
 # Initialize the associative array
-typeset -A module_functions
+typeset -gA faker_module_functions
 
-generate_module_functions() {
+_faker_generate_module_functions() {
   local output
   local module
   local function
 
   # Run the command and capture the output
   output=$(faker --available-modules)
+
 
   # Read the output line by line
   while read -r line; do
@@ -19,15 +20,20 @@ generate_module_functions() {
     elif [[ $line == -\ * ]]; then
       # Remove the '- ' prefix and add the function to the module's list
       function=${line#- }
-      module_functions[$module]+="$function "
+      faker_module_functions[$module]+="$function "
     fi
   done <<< "$output"
+
+  # Debugging: print the associative array
+  # for mod in ${(k)faker_module_functions}; do
+  #   echo "$mod: ${faker_module_functions[$mod]}"
+  # done
 }
 
 # Autocomplete function for the first argument (module name)
 _faker_module_name_completions() {
   local -a modules
-  modules=(${(k)module_functions})
+  modules=(${(k)faker_module_functions})
   _describe 'module names' modules
 }
 
@@ -36,8 +42,8 @@ _faker_function_completions() {
   local selected_module="$words[2]"
   local -a functions
 
-  if [[ -n "$selected_module" && -n "${module_functions[$selected_module]}" ]]; then
-    functions=(${(s: :)${module_functions[$selected_module]}})
+  if [[ -n "$selected_module" && -n "${faker_module_functions[$selected_module]}" ]]; then
+    functions=(${(s: :)${faker_module_functions[$selected_module]}})
     _describe 'functions' functions
   else
     _message 'no functions available for the selected module'
@@ -49,7 +55,7 @@ _faker() {
   local context state state_descr line
   typeset -A opt_args
 
-  generate_module_functions
+  _faker_generate_module_functions
 
   _arguments -C \
     '1:module name:_faker_module_name_completions' \
@@ -58,7 +64,7 @@ _faker() {
 
   case $state in
     args)
-      _values 'arguments' 'arg1' 'arg2'
+      _values -S '' 'arguments' 'min\::value:' 'max\::value:'
       ;;
   esac
 }
