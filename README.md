@@ -21,13 +21,12 @@ faker -m <module-name> -f <function-name> [-p <param-value>] [-p <param-key>:<pa
 - `-f, --function-name <value>` The name of the function in the module
 - `-p, --parameter [value...]` Function parameters as simple value and/or key-value pairs, separated by semicolons (default: [])
 - `-l, --locale <value>` The locale (default: "en")
-- `--info` display package information
-- `--available-modules` display faker modules/functions
-- `--supported-locales` display supported locales
-- `-h, --help` Display help for command
+- `--info` Display package information
+- `--available-modules` Display fakerjs modules/functions
+- `--supported-locales` Display supported locales
+- `-h, --help` Display help
 
-> For modules and supported functions see [faker api reference](https://fakerjs.dev/api/)
-
+> For modules and supported functions see [faker api reference](https://fakerjs.dev/api/)<br />
 > For supported locales see [available locales](https://fakerjs.dev/guide/localization.html#available-locales)
 
 Generate data using a specific module and function:
@@ -66,13 +65,19 @@ faker --module-name="lorem" --function-name="words" --locale="de"
 Shortened syntax:
 
 ```sh
-faker lorem.words
 faker lorem words
 faker lorem words de
 faker lorem words 5
 faker lorem words 5 de
 faker lorem words min:4 max:5
 faker lorem words min:4 max:5 de
+
+faker lorem.words
+faker lorem.words de
+faker lorem.words 5
+faker lorem.words 5 de
+faker lorem.words min:4 max:5
+faker lorem.words min:4 max:5 de
 ```
 
 ## Zsh completions
